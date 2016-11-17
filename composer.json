@@ -1,0 +1,12 @@
+{
+    "name": "root/test-gitrestapi-client-php",
+    "require": {
+        "nategood/httpful": "^0.2.20"
+    },
+    "authors": [
+        {
+            "name": "Shadi Akiki",
+            "email": "shadiakiki1986@gmail.com"
+        }
+    ]
+}
