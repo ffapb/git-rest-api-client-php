@@ -1,5 +1,7 @@
 # git-rest-api-client-php
 
+[![Build Status](https://travis-ci.org/shadiakiki1986/git-rest-api-client-php.svg?branch=master)](https://travis-ci.org/shadiakiki1986/git-rest-api-client-php)
+
 PHP client interfacing with RESTful API from server running [node-git-rest-api](https://github.com/korya/node-git-rest-api), as dockerized in [docker-node-git-rest-api](https://github.com/shadiakiki1986/docker-node-git-rest-api)
 
 
