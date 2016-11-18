@@ -29,6 +29,12 @@ class Client {
     return false;
   }
 
+  public static function handleError(\Httpful\Response $response) {
+    if(isset($response->body->error)) {
+      throw new \Exception($response->body->error);
+    }
+  }
+
   public function cloneRemote(string $remote) {
     $reponame = basename($remote);
     $repo = $this->get($reponame);
@@ -41,6 +47,8 @@ class Client {
       $this->path("clone"),
       json_encode(["remote"=>$remote])
     )->sendsJson()->send();
+
+    self::handleError($response);
 
     return new Repository($this,$response->repo);
   }

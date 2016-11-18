@@ -10,7 +10,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase {
   public static function setUpBeforeClass() {
     self::$git        = new Client('http://localhost:8081');
 
-    $remote = 'https://someone@somepass:github.com/shadiakiki1986/git-data-repo-testDataRepo';
+    $remote = 'https://someone:somepass@github.com/shadiakiki1986/git-data-repo-testDataRepo';
     self::$repo = self::$git->cloneRemote($remote);
     self::$random = substr(str_shuffle(MD5(microtime())), 0, 10);
   }

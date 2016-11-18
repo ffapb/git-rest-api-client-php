@@ -19,9 +19,7 @@ class Repository {
     $response = \Httpful\Request::get(
       $this->path('tree/'.$key)
     )->send();
-    if(isset($response->body->error)) {
-      throw new \Exception($response->body->error);
-    }
+    Client::handleError($response);
     return $response->body;
   }
 
@@ -66,9 +64,7 @@ class Repository {
     )   ->sendsJson()
         ->body(json_encode($params))
         ->send();
-    if(isset($response->body->error)) {
-      throw new \Exception($response->body->error);
-    }
+    Client::handleError($response);
     return $response->body;
   }
 
