@@ -15,8 +15,11 @@ $response = \Httpful\Request::get($base)->send();
 
 // clone if not there
 if(!in_array('git-data-repo-testDataRepo',$response->body)) {
-  \Httpful\Request::post($base."clone", json_encode(["remote"=>"https://github.com/shadiakiki1986/git-data-repo-testDataRepo"]))->sendsJson()->send();
+  var_dump('cloning');
+  $out = \Httpful\Request::post($base."clone", json_encode(["remote"=>"https://github.com/shadiakiki1986/git-data-repo-testDataRepo"]))->sendsJson()->send();
+  var_dump('out',$out->body);
 }
+exit;
 
 // get key
 $key = $base."repo/git-data-repo-testDataRepo/tree/bla";

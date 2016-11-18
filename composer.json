@@ -1,12 +1,42 @@
 {
-    "name": "root/test-gitrestapi-client-php",
-    "require": {
-        "nategood/httpful": "^0.2.20"
-    },
+    "name": "shadiakiki1986/git-rest-api-client",
+    "description": "A php client interfacing with the rest api from node-git-rest-api",
+    "type":              "library",
+    "license":           "MIT",
+    "keywords":          [
+        "git",
+        "rest",
+        "api",
+        "client"
+    ],
+    "homepage":          "https://github.com/shadiakiki1986/git-rest-api-client-php",
     "authors": [
         {
             "name": "Shadi Akiki",
             "email": "shadiakiki1986@gmail.com"
         }
-    ]
+    ],
+    "require": {
+        "php":                  "^5.5 || ^7.0",
+        "nategood/httpful": "^0.2.20"
+    },
+    "require-dev":       {
+        "phpunit/phpunit":         "^4.0 || ^5.1",
+        "cache/integration-tests": "^0.11"
+    },
+    "autoload":          {
+        "psr-4":                 {
+            "GitRestApi\\": "src/GitRestApi"
+        }
+    },
+    "autoload-dev":          {
+        "psr-4":                 {
+            "GitRestApi\\": "tests/GitRestApi"
+        }
+    },
+    "scripts": {
+      "test": [
+          "phpunit"
+      ]
+    }
 }
