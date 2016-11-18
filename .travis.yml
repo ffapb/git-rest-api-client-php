@@ -9,12 +9,10 @@ php:
 - 7
 
 before_install:
+- openssl aes-256-cbc -K $encrypted_5ee25d54c98c_key -iv $encrypted_5ee25d54c98c_iv
+  -in ssh_keys.tar.enc -out ssh_keys.tar -d
 - composer install
 - docker run -d -p 8081 shadiakiki1986/docker-node-git-rest-api
-# set up ssh
-# copied from git-data-repo/.travis.yml
-- openssl aes-256-cbc -K $encrypted_af2d8bb6d098_key -iv $encrypted_af2d8bb6d098_iv
-  -in ssh_keys.tar.enc -out ssh_keys.tar -d
 - tar xvf ssh_keys.tar && mv id_rsa* ~/.ssh
 - echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 - chmod 600 ~/.ssh/id_rsa*
@@ -30,5 +28,4 @@ after_success:
 
 env:
   global:
-    - GitRestApiTestUrl=git@github.com:shadiakiki1986/git-data-repo-testDataRepo
-    - secure: g1qPeh58PNzcYjVvn85kzx5E6NMtvtFA7/YevmpKKA6fS3oq2RfTwPKPl6qA4GNXQ1X8W38AGdcgIXtvW6uADqQIZHtmSYWQjmS7K5MudkNMI6p3Jb1GL+mIo/3yUG7mB5mWhuG3rwFQnCNKbpgs1pEjlZv6k7yqtHi27C70VR9Aj3u0P5py+R6Yk8ogEGJshdZYE0PTOi9j320PcuMResK/Q+RF5sL0W91jXAFBdITupXDuf9oaYosqXSYMg5VcslLVOYn0aiLN010HeDNETknnLNZm7nYsJAPpqS91HgHML6t79X1C2pClccDO4mKobJo+SqMWXRvbK794j+V7pGLqCRigy3sIy5qsUAOTKRcqwmHHlFsoUHBR1FpKwlznDgX457Gz+eSM4GSurEHRDyG3owsjgOLSD0/WWuNmllGfHF5Yjr5Jc33QNKBHWd3YdiFjIXXsG+oYBUg1riBTH5eT/Y0BhQ94kSMb4kFNbcYTUK4XbXZCu29FC7JAOOvp2Wr9TlDRJUN2srvYbRoGkDkPctBCmF5i8AYLb9xu3XuW/Bq87qUMz/lVohmzdEYeMlx6nhqPlVZHpmDHEvN4QGg3eHmG1Gr3bTNLevftNQCdI3g9gxoh4QFJekk/1XxeUbqonOuIc+un9AsCGihClef1wrrzppKvyyQ6OL5nLyc=
+  - GitRestApiTestUrl=git@github.com:shadiakiki1986/git-data-repo-testDataRepo

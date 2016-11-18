@@ -59,3 +59,6 @@ export GitRestApiTestUrl=https://shadiakiki1986:veggiepizza@github.com/shadiakik
 composer test
 ```
 will test everything, including the successful push.
+
+## Travis testing
+Check [git-data-repo](https://github.com/shadiakiki1986/git-data-repo)
