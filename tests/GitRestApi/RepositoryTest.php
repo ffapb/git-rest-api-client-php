@@ -2,16 +2,7 @@
 
 namespace GitRestApi;
 
-class RepositoryTest extends \PHPUnit_Framework_TestCase {
-
-  protected static $repo, $random;
-
-  // https://phpunit.de/manual/current/en/fixtures.html#fixtures.more-setup-than-teardown
-  public static function setUpBeforeClass() {
-    $git        = new Client('http://localhost:8081');
-    self::$repo = $git->cloneRemote('git-data-repo-testDataRepo');
-    self::$random = substr(str_shuffle(MD5(microtime())), 0, 10);
-  }
+class RepositoryTest extends ClientTest {
 
   /**
    * @expectedException Exception
@@ -26,7 +17,7 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase {
     $this->assertNotNull($actual);
   }
 
-  public function testPutCommitPush() {
+  public function testPutCommit() {
     // update a file called 'filename' in the repository
     $key = 'filename';
 
@@ -40,13 +31,32 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase {
 
     // commit the changes
     self::$repo->commit('a new test commit message');
-
-    // push to the remote
-    self::$repo->push();
   }
 
   /**
-   * @depends testPutCommitPush
+   * @depends testPutCommit
+   * @expectedException Exception
+   */
+  public function testPushFail() {
+    // fails because the remote URL in ClientTest does not include credentials
+    $response=self::$repo->push();
+    var_dump($response);
+  }
+
+  /**
+   * @depends testPushFail
+   */
+  public function testPushOk() {
+    $URL=getenv('GitRestApiTestUrl');
+    if(!$URL) {
+      $this->markTestSkipped('no proper url defined.. skipping');
+    }
+
+    self::$repo->push($URL);
+  }
+
+  /**
+   * @depends testPushOk
    */
   public function testPullGet() {
     // pull changes

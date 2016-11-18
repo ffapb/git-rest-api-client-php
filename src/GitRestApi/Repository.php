@@ -53,16 +53,22 @@ class Repository {
   }
 
   // push commits
-  public function push() {
+  public function push(string $remote=null) {
+    $params=[];
+    if(!is_null($remote)) {
+      $params=array_merge(
+        $params,
+        ['remote'=>$remote]
+      );
+    }
     $response = \Httpful\Request::post(
       $this->path('push')
     )   ->sendsJson()
-        ->body(
-          json_encode(
-            ['remote'=>$this->client->endpoint]
-          )
-        )
+        ->body(json_encode($params))
         ->send();
+    if(isset($response->body->error)) {
+      throw new \Exception($response->body->error);
+    }
     return $response->body;
   }
 

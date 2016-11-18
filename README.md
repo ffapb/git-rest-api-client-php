@@ -42,3 +42,12 @@ $repo->pull();
 // get contents of file
 $repo->get('filename');
 ```
+
+## Testing
+`composer test` will test everything except a successful push.
+
+```
+export GitRestApiTestUrl=https://shadiakiki1986:veggiepizza@github.com/shadiakiki1986/git-data-repo-testDataRepo
+composer test
+```
+will test everything, including the successful push.
