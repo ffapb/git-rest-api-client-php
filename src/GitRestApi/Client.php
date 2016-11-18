@@ -50,7 +50,7 @@ class Client {
 
     self::handleError($response);
 
-    return new Repository($this,$response->repo);
+    return new Repository($this,$response->body->repo);
   }
 
 }
