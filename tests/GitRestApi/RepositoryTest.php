@@ -66,5 +66,23 @@ class RepositoryTest extends ClientTest {
     $this->assertEquals($actual,self::$random);
   }
 
+  /**
+   * @depends testPullGet
+   * @expectedException Exception
+   */
+  public function testDeleteKey() {
+    self::$repo->deleteKey('filename');
+    self::$repo->push();
+    self::$repo->pull();
+    self::$repo->get('filename');
+  }
+
+  /**
+   * @depends testDeleteKey
+   */
+  public function testDeleteAll() {
+    self::$repo->deleteAll();
+  }
+
 }
 

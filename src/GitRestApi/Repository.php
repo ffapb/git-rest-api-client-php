@@ -38,6 +38,19 @@ class Repository {
       $params,
       \Httpful\Mime::UPLOAD
     )->send();
+    Client::handleError($response);
+    return $response->body;
+  }
+
+  public function deleteAll() {
+    $response = \Httpful\Request::delete($this->path(''))->send();
+    Client::handleError($response);
+    return $response->body;
+  }
+
+  public function deleteKey(string $key) {
+    $response = \Httpful\Request::delete($this->path('tree/'.$key))->send();
+    Client::handleError($response);
     return $response->body;
   }
 
@@ -47,6 +60,7 @@ class Repository {
     )   ->sendsJson()
         ->body(json_encode(['message'=>$message]))
         ->send();
+    Client::handleError($response);
     return $response->body;
   }
 
@@ -78,6 +92,7 @@ class Repository {
           )
         )
         ->send();
+    Client::handleError($response);
     return $response->body;
   }
 
