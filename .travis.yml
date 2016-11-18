@@ -29,3 +29,7 @@ after_success:
 env:
   global:
   - GitRestApiTestUrl=git@github.com:shadiakiki1986/git-data-repo-testDataRepo
+
+branches:
+  only:
+  - master
