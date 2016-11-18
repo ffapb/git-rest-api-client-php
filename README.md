@@ -44,6 +44,12 @@ $repo->get('filename');
 ```
 
 ## Testing
+Launch a `node-git-rest-api` server
+
+```bash
+docker run -p 8081:8081 -it shadiakiki1986/docker-node-git-rest-api
+```
+
 `composer test` will test everything except a successful push.
 
 ```
