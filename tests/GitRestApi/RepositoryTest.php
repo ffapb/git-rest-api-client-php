@@ -4,19 +4,25 @@ namespace GitRestApi;
 
 class RepositoryTest extends \PHPUnit_Framework_TestCase {
 
-  public function setUp() {
+  protected static $repo, $random;
+
+  // https://phpunit.de/manual/current/en/fixtures.html#fixtures.more-setup-than-teardown
+  public static function setUpBeforeClass() {
     $git        = new Client('http://localhost:8081');
-    $this->repo = $git->cloneRemote('git-data-repo-testDataRepo');
-    $this->random = substr(str_shuffle(MD5(microtime())), 0, 10);
+    self::$repo = $git->cloneRemote('git-data-repo-testDataRepo');
+    self::$random = substr(str_shuffle(MD5(microtime())), 0, 10);
   }
 
+  /**
+   * @expectedException Exception
+   */
   public function testGetInexistant() {
     // fails
-    $this->repo->get($this->random);
+    self::$repo->get(self::$random);
   }
 
   public function testGetOk() {
-    $actual = $this->repo->get('bla');
+    $actual = self::$repo->get('bla');
     $this->assertNotNull($actual);
   }
 
@@ -26,25 +32,28 @@ class RepositoryTest extends \PHPUnit_Framework_TestCase {
 
     // with random content
     // http://stackoverflow.com/a/4356295/4126114
-    $this->repo->put($key,$this->random);
+    self::$repo->put($key,self::$random);
 
     // confirm get
-    $actual = $this->repo->get($key);
-    $this->assertEquals($actual,$this->random);
+    $actual = self::$repo->get($key);
+    $this->assertEquals($actual,self::$random);
 
     // commit the changes
-    $this->repo->commit('a new test commit message');
+    self::$repo->commit('a new test commit message');
 
     // push to the remote
-    $this->repo->push();
+    self::$repo->push();
   }
 
+  /**
+   * @depends testPutCommitPush
+   */
   public function testPullGet() {
     // pull changes
-    $this->repo->pull();
+    self::$repo->pull();
     // get contents of file
-    $actual = $this->repo->get('filename');
-    $this->assertEquals($actual,$this->random);
+    $actual = self::$repo->get('filename');
+    $this->assertEquals($actual,self::$random);
   }
 
 }
