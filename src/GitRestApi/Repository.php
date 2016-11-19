@@ -54,7 +54,41 @@ class Repository {
     return $response->body;
   }
 
-  public function commit(string $message) {
+  public function configPut(string $name, string $value) {
+    $response = \Httpful\Request::put($this->path('config'))
+        ->sendsJson()
+        ->body(json_encode(['name'=>$name,'value'=>$value]))
+        ->send();
+    Client::handleError($response);
+    return $response->body;
+  }
+/*
+  private function configPutIfNotExists(string $name, string $value) {
+    $response = \Httpful\Request::get($this->path('config'))
+        ->sendsJson()
+        ->body(json_encode(['name'=>$name]))
+        ->send();
+    Client::handleError($response);
+
+    if(!in_array($name,$response->body)) {
+      if(is_null($userName)) {
+        throw new \Exception('Need to config repo '.$name.'. Please pass it to commit(...)');
+      }
+      $this->updateConfig($name,$value);
+    }
+  }
+*/
+
+  public function commit(string $message, string $userName=null, string $userEmail=null) {
+    // check if a user name and email are configured
+    if(!is_null($userName)) {
+      $this->updateConfigIfNotExists('user.name',$userName);
+    }
+    if(!is_null($userEmail)) {
+      $this->updateConfigIfNotExists('user.email',$userEmail);
+    }
+
+    //
     $response = \Httpful\Request::post(
       $this->path('commit')
     )   ->sendsJson()
@@ -83,14 +117,7 @@ class Repository {
   }
 
   public function pull() {
-    $response = \Httpful\Request::post(
-      $this->path('push')
-    )   ->sendsJson()
-        ->body(
-          json_encode(
-            ['remote'=>$this->client->endpoint]
-          )
-        )
+    $response = \Httpful\Request::post($this->path('pull'))
         ->send();
     Client::handleError($response);
     return $response->body;

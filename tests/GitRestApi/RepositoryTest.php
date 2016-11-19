@@ -17,7 +17,7 @@ class RepositoryTest extends ClientTest {
     $this->assertNotNull($actual);
   }
 
-  public function testPutCommit() {
+  public function testPut() {
     // update a file called 'filename' in the repository
     $key = 'filename';
 
@@ -28,13 +28,33 @@ class RepositoryTest extends ClientTest {
     // confirm get
     $actual = self::$repo->get($key);
     $this->assertEquals($actual,self::$random);
+  }
+
+  /**
+   * @depends testPut
+   * @expectedException Exception
+   */
+  public function testCommitFail() {
+    // commit the changes, but fail without setting user.name and user.email config
+    self::$repo->commit('a new test commit message');
+  }
+
+  /**
+   * @depends testCommitFail
+   * @expectedException Exception
+   */
+  public function testCommitOk() {
+    // config setting user.name and user.email config
+    self::$repo->configPut('user.name','Shadi Akiki phpunit');
+    self::$repo->configPut('user.email','shadiakiki1986@gmail.com');
 
     // commit the changes
     self::$repo->commit('a new test commit message');
   }
 
+
   /**
-   * @depends testPutCommit
+   * @depends testCommitOk
    * @expectedException Exception
    */
   public function testPushFail() {
