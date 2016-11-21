@@ -4,8 +4,9 @@
 
 PHP client interfacing with RESTful API from server running [node-git-rest-api](https://github.com/korya/node-git-rest-api), as dockerized in [docker-node-git-rest-api](https://github.com/shadiakiki1986/docker-node-git-rest-api)
 
-
 ### Install
+
+Published on [packagist](https://packagist.org/packages/shadiakiki1986/git-rest-api-client)
 
 ```bash
 composer require shadiakiki1986/git-rest-api-client
