@@ -2,7 +2,7 @@
 
 namespace GitRestApi;
 
-class RepositoryTest extends ClientTest {
+class RepositoryTest extends GitRestApi_TestCase {
 
   /**
    * @expectedException Exception
