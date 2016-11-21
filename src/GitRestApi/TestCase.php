@@ -2,7 +2,7 @@
 
 namespace GitRestApi;
 
-class GitRestApi_TestCase extends \PHPUnit_Framework_TestCase {
+class TestCase extends \PHPUnit_Framework_TestCase {
 
   protected static $git, $remote, $repo, $random;
 

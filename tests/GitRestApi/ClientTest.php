@@ -2,7 +2,7 @@
 
 namespace GitRestApi;
 
-class ClientTest extends GitRestApi_TestCase {
+class ClientTest extends TestCase {
 
   public static function tearDownAfterClass() {
     self::$repo->deleteAll();
