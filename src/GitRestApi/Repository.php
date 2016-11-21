@@ -112,7 +112,9 @@ class Repository {
 
   public function lsTree(string $path,string $rev=null) {
     $params=[];
-    $this->appendParams($params,'rev',$rev);
+    if(!is_null($rev)) {
+      $this->appendParams($params,'rev',$rev);
+    }
 
     return $this->run(Http::GET,'ls-tree',$path,$params);
   }
@@ -139,6 +141,7 @@ class Repository {
     }
     $response = $request->send();
     Client::handleError($response);
+//    if($method=='GET' && $path1=='ls-tree') var_dump($response);
     return $response->body;
   }
 

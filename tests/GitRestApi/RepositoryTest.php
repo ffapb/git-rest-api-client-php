@@ -8,18 +8,27 @@ class RepositoryTest extends TestCase {
    * @expectedException Exception
    */
   public function testGetTreeInexistant() {
+    $this->markTestIncomplete('Pending understand ls-tree in node-git-rest-api');
+
+    // also confirm with lsTree
+    $exists = self::$repo->lsTree(self::$random);
+    $this->assertFalse($exists);
+
     // fails
     self::$repo->getTree(self::$random);
   }
 
   public function testGetTreeOk() {
+    $this->markTestIncomplete('Pending understand ls-tree in node-git-rest-api');
+
     $actual = self::$repo->getTree('bla');
     $this->assertNotNull($actual);
+
+    // also confirm with lsTree
+    $exists = self::$repo->lsTree('bla');
+    $this->assertTrue($exists);
   }
 
-  /**
-   * @depends testGetTreeOk
-   */
   public function testPutTree() {
     // update a file called 'filename' in the repository
     $key = 'filename';
@@ -28,9 +37,14 @@ class RepositoryTest extends TestCase {
     // http://stackoverflow.com/a/4356295/4126114
     self::$repo->putTree($key,self::$random);
 
-    // confirm GetTree
+    // confirm with getTree
     $actual = self::$repo->getTree($key);
     $this->assertEquals($actual,self::$random);
+
+    // also confirm with lsTree
+    // skipped until lsTree understood
+//    $exists = self::$repo->lsTree($key);
+//    $this->assertTrue($exists);
   }
 
   /**
