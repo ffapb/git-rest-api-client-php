@@ -2,6 +2,9 @@
 
 namespace GitRestApi;
 
+use Httpful\Http;
+
+// php class for interfacing with all things /repo/:repo/... in node-git-rest-api server
 class Repository {
 
   function __construct(Client $client,string $reponame) {
@@ -15,62 +18,37 @@ class Repository {
     );
   }
 
-  public function get(string $key) {
-    $response = \Httpful\Request::get(
-      $this->path('tree/'.$key)
-    )->send();
-    Client::handleError($response);
-    return $response->body;
+  public function getTree(string $path) {
+    return $this->run(Http::GET,'tree',$path);
   }
 
-  public function put(string $key, string $value) {
+  public function putTree(string $path, string $value) {
     // save to a temporary file
     $file_name_with_full_path = tempnam(sys_get_temp_dir(), 'FOO');
     file_put_contents($file_name_with_full_path,$value);
 
-    // create curl file object for PUT
-    $cFile = curl_file_create($file_name_with_full_path);
-    $params = array('file'=> $cFile);
-
     // send PUT request
-    $response = \Httpful\Request::put(
-      $this->path('tree/'.$key),
-      $params,
-      \Httpful\Mime::UPLOAD
-    )->send();
-    Client::handleError($response);
-    return $response->body;
+    return $this->run(Http::PUT,'tree',$path,[],$file_name_with_full_path);
   }
 
   public function deleteAll() {
-    $response = \Httpful\Request::delete($this->path(''))->send();
-    Client::handleError($response);
-    return $response->body;
+    return $this->run(Http::DELETE,'');
   }
 
-  public function deleteKey(string $key) {
-    $response = \Httpful\Request::delete($this->path('tree/'.$key))->send();
-    Client::handleError($response);
-    return $response->body;
+  public function deleteKey(string $path) {
+    $this->run(Http::DELETE,'tree',$path);
   }
 
-  public function configPut(string $name, string $value) {
-    $response = \Httpful\Request::put($this->path('config'))
-        ->sendsJson()
-        ->body(json_encode(['name'=>$name,'value'=>$value]))
-        ->send();
-    Client::handleError($response);
-    return $response->body;
+  public function putConfig(string $name, string $value) {
+    $params = ['name'=>$name,'value'=>$value];
+    return $this->run(Http::PUT,'config',null,$params);
   }
+
 /*
   private function configPutIfNotExists(string $name, string $value) {
-    $response = \Httpful\Request::get($this->path('config'))
-        ->sendsJson()
-        ->body(json_encode(['name'=>$name]))
-        ->send();
-    Client::handleError($response);
+    $response = $this->run(Http::GET,'config',null,['name'=>$name]);
 
-    if(!in_array($name,$response->body)) {
+    if(!in_array($name,$response)) {
       if(is_null($userName)) {
         throw new \Exception('Need to config repo '.$name.'. Please pass it to commit(...)');
       }
@@ -79,7 +57,9 @@ class Repository {
   }
 */
 
-  public function commit(string $message, string $userName=null, string $userEmail=null) {
+/*
+  public function postConfig
+ string $userName=null, string $userEmail=null)
     // check if a user name and email are configured
     if(!is_null($userName)) {
       $this->updateConfigIfNotExists('user.name',$userName);
@@ -87,38 +67,77 @@ class Repository {
     if(!is_null($userEmail)) {
       $this->updateConfigIfNotExists('user.email',$userEmail);
     }
+*/
+
+  public function postCommit(string $message, bool $allowEmpty=false) {
+    $params = [];
+    $this->appendParams($params,'message',$message);
+    if($allowEmpty) $this->appendParams($params,'allow-empty',$allowEmpty);
 
     //
-    $response = \Httpful\Request::post(
-      $this->path('commit')
-    )   ->sendsJson()
-        ->body(json_encode(['message'=>$message]))
-        ->send();
-    Client::handleError($response);
-    return $response->body;
+    return $this->run(Http::POST,'commit',null,$params);
+  }
+
+  private function appendParams(array &$params, string $name, string $value) {
+    $params=array_merge(
+      $params,
+      [$name=>$value]
+    );
   }
 
   // push commits
-  public function push(string $remote=null) {
+  public function push(string $remote=null,string $branch=null) {
     $params=[];
     if(!is_null($remote)) {
-      $params=array_merge(
-        $params,
-        ['remote'=>$remote]
-      );
+      $this->appendParams($params,'remote',$remote);
     }
-    $response = \Httpful\Request::post(
-      $this->path('push')
-    )   ->sendsJson()
-        ->body(json_encode($params))
-        ->send();
-    Client::handleError($response);
-    return $response->body;
+    if(!is_null($branch)) {
+      $this->appendParams($params,'branch',$branch);
+    }
+
+    return $this->run(Http::POST,'push',null,$params);
   }
 
-  public function pull() {
-    $response = \Httpful\Request::post($this->path('pull'))
-        ->send();
+  public function pull(string $remote=null, string $branch=null) {
+    $params=[];
+    if(!is_null($remote)) {
+      $this->appendParams($params,'remote',$remote);
+    }
+    if(!is_null($branch)) {
+      $this->appendParams($params,'branch',$branch);
+    }
+
+    return $this->run(Http::POST,'pull',null,$params);
+  }
+
+  public function lsTree(string $path,string $rev=null) {
+    $params=[];
+    $this->appendParams($params,'rev',$rev);
+
+    return $this->run(Http::GET,'ls-tree',$path,$params);
+  }
+
+  // method: string from https://github.com/nategood/httpful/blob/master/src/Httpful/Http.php#L11
+  private function run(string $method, string $path1, string $path2=null, array $params=[], string $attachment=null) {
+
+    $path = $path1;
+    if(!is_null($path2)) {
+      $path.='/'.$path2;
+    }
+    $request = \Httpful\Request::init()
+      ->method($method)
+      ->uri($this->path($path));
+
+    if(!is_null($attachment)) {
+      $request = $request->attach(array('file' => $attachment));
+    }
+
+    if(count($params)>0) {
+        $request = $request
+          ->sendsJson()
+          ->body(json_encode($params));
+    }
+    $response = $request->send();
     Client::handleError($response);
     return $response->body;
   }

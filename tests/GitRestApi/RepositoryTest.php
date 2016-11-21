@@ -7,49 +7,51 @@ class RepositoryTest extends ClientTest {
   /**
    * @expectedException Exception
    */
-  public function testGetInexistant() {
+  public function testGetTreeInexistant() {
     // fails
-    self::$repo->get(self::$random);
+    self::$repo->getTree(self::$random);
   }
 
-  public function testGetOk() {
-    $actual = self::$repo->get('bla');
+  public function testGetTreeOk() {
+    $actual = self::$repo->getTree('bla');
     $this->assertNotNull($actual);
   }
 
-  public function testPut() {
+  /**
+   * @depends testGetTreeOk
+   */
+  public function testPutTree() {
     // update a file called 'filename' in the repository
     $key = 'filename';
 
     // with random content
     // http://stackoverflow.com/a/4356295/4126114
-    self::$repo->put($key,self::$random);
+    self::$repo->putTree($key,self::$random);
 
-    // confirm get
-    $actual = self::$repo->get($key);
+    // confirm GetTree
+    $actual = self::$repo->getTree($key);
     $this->assertEquals($actual,self::$random);
   }
 
   /**
-   * @depends testPut
+   * @depends testPutTree
    * @expectedException Exception
    */
   public function testCommitFail() {
-    // commit the changes, but fail without setting user.name and user.email config
-    self::$repo->commit('a new test commit message');
+    // commit the changes
+    self::$repo->postCommit('a new test commit message');
   }
 
   /**
    * @depends testCommitFail
-   * @expectedException Exception
    */
   public function testCommitOk() {
     // config setting user.name and user.email config
-    self::$repo->configPut('user.name','Shadi Akiki phpunit');
-    self::$repo->configPut('user.email','shadiakiki1986@gmail.com');
+    self::$repo->putConfig('user.name','Shadi Akiki phpunit');
+    self::$repo->putConfig('user.email','shadiakiki1986@gmail.com');
 
     // commit the changes
-    self::$repo->commit('a new test commit message');
+    self::$repo->postCommit('a new test commit message');
   }
 
 
@@ -73,35 +75,34 @@ class RepositoryTest extends ClientTest {
     }
 
     self::$repo->push($URL);
+
+    // delete and reclone to verify push was ok
+    self::$repo->deleteAll();
+    self::$repo = self::$git->cloneRemote(self::$remote);
+    $actual = self::$repo->getTree('filename');
+    $this->assertEquals($actual,self::$random);
   }
 
   /**
    * @depends testPushOk
    */
-  public function testPullGet() {
+  public function testPullGetTree() {
     // pull changes
     self::$repo->pull();
     // get contents of file
-    $actual = self::$repo->get('filename');
+    $actual = self::$repo->getTree('filename');
     $this->assertEquals($actual,self::$random);
   }
 
   /**
-   * @depends testPullGet
+   * @depends testPullGetTree
    * @expectedException Exception
    */
   public function testDeleteKey() {
     self::$repo->deleteKey('filename');
     self::$repo->push();
     self::$repo->pull();
-    self::$repo->get('filename');
-  }
-
-  /**
-   * @depends testDeleteKey
-   */
-  public function testDeleteAll() {
-    self::$repo->deleteAll();
+    self::$repo->getTree('filename');
   }
 
 }
