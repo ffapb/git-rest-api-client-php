@@ -2,40 +2,27 @@
 
 namespace GitRestApi;
 
+use Httpful\Http;
+
 class Client {
 
   function __construct(string $endpoint) {
-    if(!parse_url($endpoint)) {
-      throw new \Exception("Invalid endpoint URL: $endpoint");
-    }
-    // strip trailing slash
-    // http://stackoverflow.com/a/3710970/4126114
-    $endpoint = rtrim($endpoint,'/');
     $this->endpoint = $endpoint;
-  }
-
-  public function path(string $part2) {
-    return $this->endpoint.'/'.$part2;
   }
 
   public function get(string $reponame) {
     // get list of cloned
-    $response = \Httpful\Request::get($this->endpoint)->send();
+    $req = new Request(Http::GET, $this->endpoint);
+    $response = $req->send();
 
-    if(in_array($reponame,$response->body)) {
+    if(in_array($reponame,$response)) {
       return new Repository($this,$reponame);
     }
 
     return false;
   }
 
-  public static function handleError(\Httpful\Response $response) {
-    if(isset($response->body->error)) {
-      throw new \Exception($response->body->error);
-    }
-  }
-
-  public function cloneRemote(string $remote) {
+  public function cloneRemote(string $remote, string $repo=null, string $bare=null, int $depth=null) {
     $reponame = basename($remote);
     $repo = $this->get($reponame);
     if(!!$repo) {
@@ -43,14 +30,10 @@ class Client {
     }
 
     // otherwise perform clone
-    $response = \Httpful\Request::post(
-      $this->path("clone"),
-      json_encode(["remote"=>$remote])
-    )->sendsJson()->send();
+    $req = new Request(Http::POST, $this->endpoint, ["remote"=>$remote], 'clone');
+    $response = $req->send();
 
-    self::handleError($response);
-
-    return new Repository($this,$response->body->repo);
+    return new Repository($this,$response->repo);
   }
 
 }

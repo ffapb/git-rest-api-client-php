@@ -7,19 +7,19 @@ use Httpful\Http;
 // php class for interfacing with all things /repo/:repo/... in node-git-rest-api server
 class Repository {
 
-  function __construct(Client $client,string $reponame) {
+  function __construct(Client $client, string $reponame) {
     $this->client = $client;
     $this->reponame = $reponame;
   }
 
-  private function path(string $part2) {
+  private function path(string $action) {
     return $this->client->path(
-      'repo/'.$this->reponame.'/'.$part2
+      'repo/'.$this->reponame.'/'.$action
     );
   }
 
   public function getTree(string $path) {
-    return $this->run(Http::GET,'tree',$path);
+    return $this->run(Http::GET,'tree',[],$path);
   }
 
   public function putTree(string $path, string $value) {
@@ -28,7 +28,7 @@ class Repository {
     file_put_contents($file_name_with_full_path,$value);
 
     // send PUT request
-    return $this->run(Http::PUT,'tree',$path,[],$file_name_with_full_path);
+    return $this->run(Http::PUT,'tree',[],$path,$file_name_with_full_path);
   }
 
   public function deleteAll() {
@@ -41,12 +41,12 @@ class Repository {
 
   public function putConfig(string $name, string $value) {
     $params = ['name'=>$name,'value'=>$value];
-    return $this->run(Http::PUT,'config',null,$params);
+    return $this->run(Http::PUT,'config',$params);
   }
 
 /*
   private function configPutIfNotExists(string $name, string $value) {
-    $response = $this->run(Http::GET,'config',null,['name'=>$name]);
+    $response = $this->run(Http::GET,'config',['name'=>$name]);
 
     if(!in_array($name,$response)) {
       if(is_null($userName)) {
@@ -75,7 +75,7 @@ class Repository {
     if($allowEmpty) $this->appendParams($params,'allow-empty',$allowEmpty);
 
     //
-    return $this->run(Http::POST,'commit',null,$params);
+    return $this->run(Http::POST,'commit',$params);
   }
 
   private function appendParams(array &$params, string $name, string $value) {
@@ -95,7 +95,7 @@ class Repository {
       $this->appendParams($params,'branch',$branch);
     }
 
-    return $this->run(Http::POST,'push',null,$params);
+    return $this->run(Http::POST,'push',$params);
   }
 
   public function pull(string $remote=null, string $branch=null) {
@@ -107,7 +107,7 @@ class Repository {
       $this->appendParams($params,'branch',$branch);
     }
 
-    return $this->run(Http::POST,'pull',null,$params);
+    return $this->run(Http::POST,'pull',$params);
   }
 
   public function lsTree(string $path,string $rev=null) {
@@ -116,33 +116,12 @@ class Repository {
       $this->appendParams($params,'rev',$rev);
     }
 
-    return $this->run(Http::GET,'ls-tree',$path,$params);
+    return $this->run(Http::GET,'ls-tree',$params,$path);
   }
 
-  // method: string from https://github.com/nategood/httpful/blob/master/src/Httpful/Http.php#L11
-  private function run(string $method, string $path1, string $path2=null, array $params=[], string $attachment=null) {
-
-    $path = $path1;
-    if(!is_null($path2)) {
-      $path.='/'.$path2;
-    }
-    $request = \Httpful\Request::init()
-      ->method($method)
-      ->uri($this->path($path));
-
-    if(!is_null($attachment)) {
-      $request = $request->attach(array('file' => $attachment));
-    }
-
-    if(count($params)>0) {
-        $request = $request
-          ->sendsJson()
-          ->body(json_encode($params));
-    }
-    $response = $request->send();
-    Client::handleError($response);
-//    if($method=='GET' && $path1=='ls-tree') var_dump($response);
-    return $response->body;
+  private function run(string $method, string $action=null, array $params=[], string $path=null, string $attachment=null) {
+    $req = new Request($method, $this->client->endpoint, $params, $action, $this->reponame, $path, $attachment);
+    return $req->send();
   }
 
 }
