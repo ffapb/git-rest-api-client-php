@@ -24,13 +24,24 @@ class Client {
 
   public function cloneRemote(string $remote, string $repo=null, string $bare=null, int $depth=null) {
     $reponame = basename($remote);
-    $repo = $this->get($reponame);
-    if(!!$repo) {
-      return $repo;
+    $existing = $this->get($reponame);
+    if(!!$existing) {
+      return $existing;
+    }
+
+    $params=["remote"=>$remote];
+    if(!is_null($repo)) {
+      self::appendParams($params,'repo',$repo);
+    }
+    if(!is_null($bare)) {
+      self::appendParams($params,'bare',$bare);
+    }
+    if(!is_null($depth)) {
+      self::appendParams($params,'depth',$depth);
     }
 
     // otherwise perform clone
-    $req = new Request(Http::POST, $this->endpoint, ["remote"=>$remote], 'clone');
+    $req = new Request(Http::POST, $this->endpoint, $params, 'clone');
     $response = $req->send();
 
     return new Repository($this,$response->repo);

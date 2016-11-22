@@ -71,14 +71,14 @@ class Repository {
 
   public function postCommit(string $message, bool $allowEmpty=false) {
     $params = [];
-    $this->appendParams($params,'message',$message);
-    if($allowEmpty) $this->appendParams($params,'allow-empty',$allowEmpty);
+    self::appendParams($params,'message',$message);
+    if($allowEmpty) self::appendParams($params,'allow-empty',$allowEmpty);
 
     //
     return $this->run(Http::POST,'commit',$params);
   }
 
-  private function appendParams(array &$params, string $name, string $value) {
+  public static function appendParams(array &$params, string $name, string $value) {
     $params=array_merge(
       $params,
       [$name=>$value]
@@ -89,10 +89,10 @@ class Repository {
   public function push(string $remote=null,string $branch=null) {
     $params=[];
     if(!is_null($remote)) {
-      $this->appendParams($params,'remote',$remote);
+      self::appendParams($params,'remote',$remote);
     }
     if(!is_null($branch)) {
-      $this->appendParams($params,'branch',$branch);
+      self::appendParams($params,'branch',$branch);
     }
 
     return $this->run(Http::POST,'push',$params);
@@ -101,10 +101,10 @@ class Repository {
   public function pull(string $remote=null, string $branch=null) {
     $params=[];
     if(!is_null($remote)) {
-      $this->appendParams($params,'remote',$remote);
+      self::appendParams($params,'remote',$remote);
     }
     if(!is_null($branch)) {
-      $this->appendParams($params,'branch',$branch);
+      self::appendParams($params,'branch',$branch);
     }
 
     return $this->run(Http::POST,'pull',$params);
@@ -113,7 +113,7 @@ class Repository {
   public function lsTree(string $path,string $rev=null) {
     $params=[];
     if(!is_null($rev)) {
-      $this->appendParams($params,'rev',$rev);
+      self::appendParams($params,'rev',$rev);
     }
 
     return $this->run(Http::GET,'ls-tree',$params,$path);
