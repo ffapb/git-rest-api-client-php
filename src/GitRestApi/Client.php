@@ -22,7 +22,7 @@ class Client {
     return false;
   }
 
-  public function cloneRemote(string $remote, string $repo=null, string $bare=null, int $depth=null) {
+  public function cloneRemote(string $remote, int $depth=null, string $repo=null, string $bare=null) {
     $reponame = basename($remote);
     $existing = $this->get($reponame);
     if(!!$existing) {
@@ -30,14 +30,14 @@ class Client {
     }
 
     $params=["remote"=>$remote];
+    if(!is_null($depth)) {
+      Repository::appendParams($params,'depth',$depth);
+    }
     if(!is_null($repo)) {
-      self::appendParams($params,'repo',$repo);
+      Repository::appendParams($params,'repo',$repo);
     }
     if(!is_null($bare)) {
-      self::appendParams($params,'bare',$bare);
-    }
-    if(!is_null($depth)) {
-      self::appendParams($params,'depth',$depth);
+      Repository::appendParams($params,'bare',$bare);
     }
 
     // otherwise perform clone
