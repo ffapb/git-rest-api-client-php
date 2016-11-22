@@ -32,7 +32,7 @@ class Repository {
   }
 
   public function deleteAll() {
-    return $this->run(Http::DELETE,'');
+    return $this->run(Http::DELETE);
   }
 
   public function deleteKey(string $path) {

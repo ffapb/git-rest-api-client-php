@@ -18,5 +18,13 @@ class ClientTest extends TestCase {
     $this->assertNotNull($repo);
   }
 
+  public function testCloneShallow() {
+    $this->markTestIncomplete();
+    self::$repo->deleteAll();
+    $repo = self::$git->cloneRemote(self::$remote,null,null,1);
+    $this->assertNotNull($repo);
+    $this->assertInstanceOf(Repository,$repo);
+  }
+
 }
 
