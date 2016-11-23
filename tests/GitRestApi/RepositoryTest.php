@@ -49,6 +49,21 @@ class RepositoryTest extends TestCase {
 
   /**
    * @depends testPutTree
+   */
+  public function testDeleteTree() {
+    self::$repo->deleteTree('filename');
+    try {
+      self::$repo->getTree('filename');
+      $this->assertTrue(false);
+    } catch(\Exception $e) {
+      $this->assertTrue(true);
+    }
+
+    self::$repo->putTree('filename',self::$random);
+  }
+
+  /**
+   * @depends testDeleteTree
    * @expectedException Exception
    */
   public function testCommitFail() {
@@ -106,17 +121,6 @@ class RepositoryTest extends TestCase {
     // get contents of file
     $actual = self::$repo->getTree('filename');
     $this->assertEquals($actual,self::$random);
-  }
-
-  /**
-   * @depends testPullGetTree
-   * @expectedException Exception
-   */
-  public function testDeleteTree() {
-    self::$repo->deleteTree('filename');
-    self::$repo->push();
-    self::$repo->pull();
-    self::$repo->getTree('filename');
   }
 
 }
