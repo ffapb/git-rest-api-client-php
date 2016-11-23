@@ -35,7 +35,7 @@ class Repository {
     return $this->run(Http::DELETE);
   }
 
-  public function deleteKey(string $path) {
+  public function deleteTree(string $path) {
     $this->run(Http::DELETE,'tree',$path);
   }
 

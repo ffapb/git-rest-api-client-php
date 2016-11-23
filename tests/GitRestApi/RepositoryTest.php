@@ -112,8 +112,8 @@ class RepositoryTest extends TestCase {
    * @depends testPullGetTree
    * @expectedException Exception
    */
-  public function testDeleteKey() {
-    self::$repo->deleteKey('filename');
+  public function testDeleteTree() {
+    self::$repo->deleteTree('filename');
     self::$repo->push();
     self::$repo->pull();
     self::$repo->getTree('filename');
