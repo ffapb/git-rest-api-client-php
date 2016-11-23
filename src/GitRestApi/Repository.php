@@ -119,6 +119,15 @@ class Repository {
     return $this->run(Http::GET,'ls-tree',$params,$path);
   }
 
+  public function log(string $revRange=null) {
+    $params=[];
+    if(!is_null($revRange)) {
+      self::appendParams($params,'revRange',$revRange);
+    }
+
+    return $this->run(Http::GET,'log',$params);
+  }
+
   private function run(string $method, string $action=null, array $params=[], string $path=null, string $attachment=null) {
     $req = new Request($method, $this->client->endpoint, $params, $action, $this->reponame, $path, $attachment);
     return $req->send();

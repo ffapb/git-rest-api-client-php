@@ -94,6 +94,25 @@ class RepositoryTest extends TestCase {
     var_dump($response);
   }
 
+  public function testLogLong() {
+    $long = self::$repo->log();
+    $this->assertLessThan(2,1);
+    $this->assertLessThan(count($long),0);
+  }
+
+  public function testLogShort() {
+    $short = self::$repo->log("-1");
+    $this->assertEquals(1,count($short));
+
+    // sha1
+    $short = array_values($short)[0];
+    $this->assertEquals(40,strlen($short->sha1));
+
+    // commitDate, e.g. Mon Jun 27 12:14:50 2016 +0300
+    $date = \DateTime::createFromFormat('!D M d H:i:s Y O',$short->commitDate);
+    $this->assertInstanceOf(\DateTime::class, $date);
+  }
+
   /**
    * @depends testPushFail
    */
