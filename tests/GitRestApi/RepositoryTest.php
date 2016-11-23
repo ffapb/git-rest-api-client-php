@@ -109,8 +109,7 @@ class RepositoryTest extends TestCase {
     $this->assertEquals(40,strlen($short->sha1));
 
     // commitDate, e.g. Mon Jun 27 12:14:50 2016 +0300
-    $date = \DateTime::createFromFormat('!D M d H:i:s Y O',$short->commitDate);
-    $this->assertInstanceOf(\DateTime::class, $date);
+    $this->assertInstanceOf(\DateTime::class, $short->commitDate);
   }
 
   /**

@@ -125,7 +125,18 @@ class Repository {
       self::appendParams($params,'revRange',$revRange);
     }
 
-    return $this->run(Http::GET,'log',$params);
+    $response = $this->run(Http::GET,'log',$params);
+
+    // convert commitDate to \DateTime class
+    // e.g. Mon Jun 27 12:14:50 2016 +0300
+    array_walk(
+      $response,
+      function(&$log) {
+        $log->commitDate = \DateTime::createFromFormat('!D M d H:i:s Y O',$log->commitDate);
+      }
+    );
+
+    return $response;
   }
 
   private function run(string $method, string $action=null, array $params=[], string $path=null, string $attachment=null) {
