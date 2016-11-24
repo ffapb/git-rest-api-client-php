@@ -61,6 +61,11 @@ composer test
 ```
 will test everything, including the successful push.
 
+For testing against my own bitbucket private repo:
+```
+PRIVATE_REMOTE=https://myusername:mypassword@bitbucket.org/shadiakiki1986/ffa-bdlreports-maps/ PRIVATE_FILE=filename vendor/bin/phpunit tests/GitRestApi/PrivateTest.php
+```
+
 ## Travis testing
 Check [git-data-repo](https://github.com/shadiakiki1986/git-data-repo)
 
