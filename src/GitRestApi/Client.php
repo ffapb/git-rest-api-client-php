@@ -22,8 +22,15 @@ class Client {
     return false;
   }
 
-  public function init() {
-    throw new \Exception("WIP");
+  public function init(string $reponame, bool $bare=false, bool $shared=false) {
+    $params = ['repo'=>$reponame];
+    if($bare) self::appendParams($params,'bare',$bare);
+    if($shared) self::appendParams($params,'shared',$shared);
+
+    $req = new Request(Http::POST, $this->endpoint, $params, 'init');
+    $response = $req->send();
+
+    return new Repository($this,$response->repo);
   }
 
   public function cloneRemote(string $remote, int $depth=null, string $repo=null, string $bare=null) {

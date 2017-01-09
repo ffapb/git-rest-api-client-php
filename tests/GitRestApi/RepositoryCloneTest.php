@@ -2,7 +2,7 @@
 
 namespace GitRestApi;
 
-class RepositoryTest extends TestCase {
+class RepositoryCloneTest extends TestCase {
 
   /**
    * @expectedException Exception
@@ -102,7 +102,7 @@ class RepositoryTest extends TestCase {
 
   public function testLogShort() {
     $short = self::$repo->log("-1");
-    $this->assertEquals(1,count($short));
+    $this->assertEquals(1,count($short),json_encode((array) self::$repo));
 
     // sha1
     $short = array_values($short)[0];

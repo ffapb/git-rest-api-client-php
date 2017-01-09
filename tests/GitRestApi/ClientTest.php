@@ -16,6 +16,13 @@ class ClientTest extends TestCase {
     // get already-cloned git repository
     $repo = self::$git->get('git-data-repo-testDataRepo');
     $this->assertNotNull($repo);
+    $this->assertInstanceOf(Repository::class,$repo);
+  }
+
+  public function testInit() {
+    $repo = self::$git->init('repo-'.self::$random);
+    $this->assertNotNull($repo);
+    $this->assertInstanceOf(Repository::class,$repo);
   }
 
   public function testCloneShallowOk() {
