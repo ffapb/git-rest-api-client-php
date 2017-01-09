@@ -22,6 +22,10 @@ class Client {
     return false;
   }
 
+  public function init() {
+    throw new \Exception("WIP");
+  }
+
   public function cloneRemote(string $remote, int $depth=null, string $repo=null, string $bare=null) {
     $reponame = basename($remote);
     $existing = $this->get($reponame);
