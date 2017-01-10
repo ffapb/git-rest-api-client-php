@@ -4,6 +4,7 @@ namespace GitRestApi;
 
 class Request {
 
+  // method: string from https://github.com/nategood/httpful/blob/master/src/Httpful/Http.php#L11
   function __construct(string $method, string $endpoint, array $params=[], string $action=null, string $reponame=null, string $path=null, string $attachment=null) {
     if(!parse_url($endpoint)) {
       throw new \Exception("Invalid endpoint URL: $endpoint");
@@ -34,11 +35,15 @@ class Request {
     );
     $url = implode('/',$constituents);
 
+    if($this->method==\Httpful\Http::GET) {
+      $url = $url.'?'.http_build_query($this->params);
+    }
+
     return $url;
   }
 
-  // method: string from https://github.com/nategood/httpful/blob/master/src/Httpful/Http.php#L11
   public function send() {
+    #echo ">> ".$this->url().PHP_EOL.count($this->params).PHP_EOL;
     $request = \Httpful\Request::init()
       ->method($this->method)
       ->uri($this->url());
@@ -47,10 +52,14 @@ class Request {
       $request = $request->attach(array('file' => $this->attachment));
     }
 
-    if(count($this->params)>0) {
-        $request = $request
-          ->sendsJson()
-          ->body(json_encode($this->params));
+    if($this->method!=\Httpful\Http::GET) {
+      // do not append params for GET since already done in the URL
+      // https://github.com/nategood/httpful/pull/65#issuecomment-13908071
+      if(count($this->params)>0) {
+          $request = $request
+            ->sendsJson()
+            ->body(json_encode($this->params));
+      }
     }
     $response = $request->send();
 

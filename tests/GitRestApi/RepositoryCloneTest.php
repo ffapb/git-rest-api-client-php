@@ -83,7 +83,6 @@ class RepositoryCloneTest extends TestCase {
     self::$repo->postCommit('a new test commit message');
   }
 
-
   /**
    * @depends testCommitOk
    * @expectedException Exception

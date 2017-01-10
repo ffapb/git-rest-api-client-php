@@ -22,6 +22,17 @@ class Repository {
     return $this->run(Http::GET,'tree',[],$path);
   }
 
+  public function diff(string $path='', string $commit1=null, string $commit2=null) {
+    $params=[];
+    if(!is_null($commit1)) {
+      self::appendParams($params,'commit1',$commit1);
+    }
+    if(!is_null($commit2)) {
+      self::appendParams($params,'commit2',$commit2);
+    }
+    return $this->run(Http::GET,'diff',$params,$path);
+  }
+
   public function putTree(string $path, string $value) {
     // save to a temporary file
     $file_name_with_full_path = tempnam(sys_get_temp_dir(), 'FOO');
@@ -140,6 +151,7 @@ class Repository {
   }
 
   private function run(string $method, string $action=null, array $params=[], string $path=null, string $attachment=null) {
+    # echo ">> ".json_encode(func_get_args()).PHP_EOL;
     $req = new Request($method, $this->client->endpoint, $params, $action, $this->reponame, $path, $attachment);
     return $req->send();
   }
