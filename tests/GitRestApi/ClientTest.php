@@ -4,10 +4,6 @@ namespace GitRestApi;
 
 class ClientTest extends TestCase {
 
-  public static function tearDownAfterClass() {
-    self::$repo->deleteAll();
-  }
-
   public function testClone() {
     $this->assertNotNull(self::$repo);
   }

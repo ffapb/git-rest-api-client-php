@@ -15,5 +15,8 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     self::$random = substr(str_shuffle(MD5(microtime())), 0, 10);
   }
 
-}
+  public static function tearDownAfterClass() {
+    self::$repo->deleteAll();
+  }
 
+}

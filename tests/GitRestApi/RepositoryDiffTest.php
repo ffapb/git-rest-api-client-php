@@ -6,12 +6,10 @@ class RepositoryDiffTest extends TestCase {
 
   public static function setUpBeforeClass() {
     RepositoryInitTest::setUpBeforeClass();
+    self::$repo->putConfig('user.name','Shadi Akiki phpunit');
+    self::$repo->putConfig('user.email','shadiakiki1986@gmail.com');
   }
   
-  public function tearDown() {
-    self::$repo->deleteAll();
-  }
-
   public function testDiff() {
     // note that putTree: uploads and does a git add
     self::$repo->putTree('a.txt','A');

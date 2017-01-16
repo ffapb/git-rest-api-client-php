@@ -46,7 +46,14 @@ $repo->pull();
 $repo->get('filename');
 ```
 
-## Testing
+## Testing locally
+'
+VERY IMPORTANT NOTE:
+Do NOT directly run `node-git-rest-api` on your local machine and test this package against it.
+The tests contain a few `git config --global ...` calls, which would change your username/email on your local machine,
+and hence screwing up your git commits in all other repositories.
+'
+
 Launch a `node-git-rest-api` server
 
 ```bash
@@ -66,7 +73,7 @@ For testing against my own bitbucket private repo:
 PRIVATE_REMOTE=https://myusername:mypassword@bitbucket.org/shadiakiki1986/ffa-bdlreports-maps/ PRIVATE_FILE=filename vendor/bin/phpunit tests/GitRestApi/PrivateTest.php
 ```
 
-## Travis testing
+## Testing on travis
 Check [git-data-repo](https://github.com/shadiakiki1986/git-data-repo)
 
 ## TODO

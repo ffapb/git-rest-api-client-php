@@ -36,7 +36,9 @@ class Request {
     $url = implode('/',$constituents);
 
     if($this->method==\Httpful\Http::GET) {
-      $url = $url.'?'.http_build_query($this->params);
+      if(count($this->params)>0) {
+        $url = $url.'?'.http_build_query($this->params);
+      }
     }
 
     return $url;
