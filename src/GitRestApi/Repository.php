@@ -22,7 +22,7 @@ class Repository {
     return $this->run(Http::GET,'tree',[],$path);
   }
 
-  public function diff(string $path='', string $commit1=null, string $commit2=null) {
+  public function diff(string $path='', string $commit1=null, string $commit2=null, bool $cached=false) {
     $params=[];
     if(!is_null($commit1)) {
       self::appendParams($params,'commit1',$commit1);
@@ -30,6 +30,10 @@ class Repository {
     if(!is_null($commit2)) {
       self::appendParams($params,'commit2',$commit2);
     }
+    if($cached) {
+      self::appendParams($params,'cached',$cached);
+    }
+
     return $this->run(Http::GET,'diff',$params,$path);
   }
 
